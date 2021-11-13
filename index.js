@@ -18,6 +18,7 @@ async function run() {
         const database = client.db("rh-london");
         const allCollections = database.collection("collections");
         const reviewCollections = database.collection("reviews");
+        const orderCollections = database.collection("orders");
 
         //Get Api for collections
         app.get('/collections', async (req, res) => {
@@ -33,12 +34,46 @@ async function run() {
             res.send(reviews);
         })
 
+         //Get Api for orders
+         app.get('/orders', async (req, res) => {
+            const cursor = orderCollections.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+
         //Single Get Api for collections
         app.get('/service-details/:orderId', async (req, res) => {
             const orderId = req.params.orderId;
             const query = { _id: ObjectId(orderId) };
             const details = await allCollections.findOne(query);
             res.send(details);
+        })
+
+        //Post Api for orders
+        app.post('/place-order', async(req, res) => {
+            const order = req.body; 
+            const result = await orderCollections.insertOne(order);
+
+            console.log('An order was inserted:', result);
+            res.json(result); //output on client site as a json
+        })
+
+        //Post Api for offers
+        app.post('/add-collection', async(req, res) => {
+            const collection = req.body; //console.log(req.body);
+            const result = await allCollections.insertOne(collection);
+
+            console.log('An offer was inserted:', result);
+            res.json(result); //output on client site as a json
+        })
+
+        //Post Api for reviews
+        app.post('/add-review', async(req, res) => {
+            const review = req.body; //console.log(req.body);
+            const result = await reviewCollections.insertOne(review);
+
+            console.log('An offer was inserted:', result);
+            res.json(result); //output on client site as a json
         })
 
     } finally {
