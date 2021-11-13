@@ -76,6 +76,33 @@ async function run() {
             res.json(result); //output on client site as a json
         })
 
+        //Delete Api for collections
+        app.delete('/delete-collection/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await allCollections.deleteOne(query);
+
+            res.json(result); //output on client site as a json
+        })
+
+        //Delete Api for reviews
+        app.delete('/delete-review/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await reviewCollections.deleteOne(query);
+
+            res.json(result); //output on client site as a json
+        })
+
+        //Delete Api for orders
+        app.delete('/delete-order/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollections.deleteOne(query);
+
+            res.json(result); //output on client site as a json
+        })
+
     } finally {
     //   await client.close();
     }
