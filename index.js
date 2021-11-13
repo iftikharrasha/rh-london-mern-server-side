@@ -24,8 +24,22 @@ async function run() {
         //Get Api for collections
         app.get('/collections', async (req, res) => {
             const cursor = allCollections.find({});
-            const collections = await cursor.toArray();
-            res.send(collections);
+
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let collections;
+            const count = await cursor.count();
+
+            if(page){
+                collections = await cursor.skip(page*size).limit(size).toArray();
+            }else{
+                collections = await cursor.toArray();
+            }
+
+            res.send({
+                count,
+                collections
+            });
         })
 
         //Get Api for reviews
@@ -162,6 +176,24 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await userCollections.deleteOne(query);
+
+            res.json(result);
+        })
+
+        //Update Api for orders
+        app.put('/update-order/:orderId', async(req, res) => {
+            const orderId = req.params.orderId;
+            const updatedOrder = req.body;
+            updatedOrder.status = false;
+            const status = updatedOrder.status;
+            const query = { _id: ObjectId(orderId) };
+
+            const updateDoc = {
+                $set: {
+                  status: status
+                },
+            };
+            const result = await orderCollections.updateOne(query, updateDoc);
 
             res.json(result);
         })
