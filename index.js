@@ -22,7 +22,7 @@ async function run() {
         const userCollections = database.collection("users");
 
         //Get Api for collections
-        app.get('/collections', async (req, res) => {
+        app.get('/api/collections', async (req, res) => {
             const filter = {};
             const page = req.query.page;
             const size = parseInt(req.query.size);
@@ -49,28 +49,28 @@ async function run() {
           });
 
         //Get Api for reviews
-        app.get('/reviews', async (req, res) => {
+        app.get('/api/reviews', async (req, res) => {
             const cursor = reviewCollections.find({});
             const reviews = await cursor.toArray();
             res.send(reviews);
         })
 
          //Get Api for users
-         app.get('/all-users', async (req, res) => {
+         app.get('/api/all-users', async (req, res) => {
             const cursor = userCollections.find({});
             const users = await cursor.toArray();
             res.send(users);
         })
 
          //Get Api for orders
-         app.get('/orders', async (req, res) => {
+         app.get('/api/orders', async (req, res) => {
             const cursor = orderCollections.find({});
             const orders = await cursor.toArray();
             res.send(orders);
         })
 
         // Get Api for my orders
-        app.get('/my-orders/:orderOwner', async (req, res) => {
+        app.get('/api/my-orders/:orderOwner', async (req, res) => {
             const orderOwner = req.params.orderOwner;
             const query = { email: orderOwner };
 
@@ -80,7 +80,7 @@ async function run() {
         })
 
         //Single Get Api for collections
-        app.get('/service-details/:orderId', async (req, res) => {
+        app.get('/api/service-details/:orderId', async (req, res) => {
             const orderId = req.params.orderId;
             const query = { _id: ObjectId(orderId) };
             const details = await allCollections.findOne(query);
@@ -88,7 +88,7 @@ async function run() {
         })
 
         //Single Get Api for user email
-        app.get('/users/:email', async (req, res) => {
+        app.get('/api/users/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
             const user = await userCollections.findOne(query);
@@ -101,7 +101,7 @@ async function run() {
         })
 
         //Post Api for orders
-        app.post('/place-order', async(req, res) => {
+        app.post('/api/place-order', async(req, res) => {
             const order = req.body; 
             const result = await orderCollections.insertOne(order);
             console.log('Order inserted:', result);
@@ -109,28 +109,28 @@ async function run() {
         })
 
         //Post Api for offers
-        app.post('/add-collection', async(req, res) => {
+        app.post('/api/add-collection', async(req, res) => {
             const collection = req.body; 
             const result = await allCollections.insertOne(collection);
             res.json(result); 
         })
 
         //Post Api for reviews
-        app.post('/add-review', async(req, res) => {
+        app.post('/api/add-review', async(req, res) => {
             const review = req.body;
             const result = await reviewCollections.insertOne(review);
             res.json(result);
         })
 
          //Post Api for users
-         app.post('/users', async(req, res) => {
+         app.post('/api/users', async(req, res) => {
             const user = req.body;
             const result = await userCollections.insertOne(user);
             res.json(result); 
         })
 
          //Put Api for users - upsert
-         app.put('/users', async(req, res) => {
+         app.put('/api/users', async(req, res) => {
             const user = req.body; 
             const filter = { email: user.email };
             const options = { upsert: true };
@@ -141,7 +141,7 @@ async function run() {
         })
 
         //Put Api for admin
-        app.put('/users/admin', async(req, res) => {
+        app.put('/api/users/admin', async(req, res) => {
             const user = req.body; 
             const filter = { email: user.email };
             const updateDoc = { $set: {role: 'admin'} };
@@ -151,7 +151,7 @@ async function run() {
         })
 
         //Delete Api for collections
-        app.delete('/delete-collection/:id', async(req, res) => {
+        app.delete('/api/delete-collection/:id', async(req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await allCollections.deleteOne(query);
@@ -160,7 +160,7 @@ async function run() {
         })
 
         //Delete Api for reviews
-        app.delete('/delete-review/:id', async(req, res) => {
+        app.delete('/api/delete-review/:id', async(req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await reviewCollections.deleteOne(query);
@@ -169,7 +169,7 @@ async function run() {
         })
 
         //Delete Api for orders
-        app.delete('/delete-order/:id', async(req, res) => {
+        app.delete('/api/delete-order/:id', async(req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await orderCollections.deleteOne(query);
@@ -178,7 +178,7 @@ async function run() {
         })
 
         //Delete Api for users
-        app.delete('/delete-user/:id', async(req, res) => {
+        app.delete('/api/delete-user/:id', async(req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await userCollections.deleteOne(query);
@@ -187,7 +187,7 @@ async function run() {
         })
 
         //Update Api for orders
-        app.put('/update-order/:orderId', async(req, res) => {
+        app.put('/api/update-order/:orderId', async(req, res) => {
             const orderId = req.params.orderId;
             const updatedOrder = req.body;
             updatedOrder.status = false;
@@ -211,8 +211,8 @@ async function run() {
 
 run().catch(console.dir);
 
-app.get('/', (req, res) => {
-    res.send('Server is loading!');
+app.get('/api/', (req, res) => {
+    res.send('Server is loading on vercel!');
 })
 
 app.listen(port, () => console.log('Server is loading at port@5000'));
