@@ -15,7 +15,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const database = client.db("rh-london");
+        const database = client.db("E24NewsStore");
         const allCollections = database.collection("collections");
         const reviewCollections = database.collection("reviews");
         const orderCollections = database.collection("orders");
@@ -23,24 +23,30 @@ async function run() {
 
         //Get Api for collections
         app.get('/collections', async (req, res) => {
-            const cursor = allCollections.find({});
-
+            const filter = {};
             const page = req.query.page;
             const size = parseInt(req.query.size);
-            let collections;
-            const count = await cursor.count();
-
-            if(page){
-                collections = await cursor.skip(page*size).limit(size).toArray();
-            }else{
-                collections = await cursor.toArray();
+            
+            // Check if the 'addedBy' query parameter is present in the request
+            if (req.query.addedBy) {
+              filter.addedBy = req.query.addedBy;
             }
-
+          
+            const cursor = allCollections.find(filter);
+            const count = await cursor.count();
+          
+            let collections;
+            if (page) {
+              collections = await cursor.skip(page * size).limit(size).toArray();
+            } else {
+              collections = await cursor.toArray();
+            }
+          
             res.send({
-                count,
-                collections
+              count,
+              collections
             });
-        })
+          });
 
         //Get Api for reviews
         app.get('/reviews', async (req, res) => {
